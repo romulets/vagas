@@ -9,17 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/romulets/vagas.git"
+    "url": "git+https://github.com/tekpixo/vagas.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/romulets/vagas/issues"
+    "url": "https://github.com/tekpixo/vagas/issues"
   },
-  "homepage": "https://github.com/romulets/vagas#readme",
+  "homepage": "https://github.com/tekpixo/vagas#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "nodemon": "^2.0.2"
   },
