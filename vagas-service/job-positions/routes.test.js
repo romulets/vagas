@@ -1,8 +1,18 @@
 const request = require('supertest')
 const app = require('./routes.js')
+const repository = require('./repository.js')
+const mockNow = require('jest-mock-now')
 
+const NOW = new Date('2020-04-12');
+mockNow(NOW)
+
+jest.mock('./repository.js')
 
 describe('Get job positions', () => {
+  beforeAll(() => {
+    repository.save.mockImplementation(jobPosition => ({_id: 'FAKE_ID', ...jobPosition}))
+  })
+
   it('Should get successfully', async done => {
     const res = await request(app)
       .get('/')
@@ -36,7 +46,7 @@ describe('Post job position', () => {
       webPage: 'https://github.com/careers',
       company: { name: 'Github', province: 'PR' },
       jobRecruiter: { email: "recruiter@github.com", linkedIn: "recruiter-from-github" },
-      createdAt: '2020-04-10T10:00:00'
+      createdAt: '2020-04-12T00:00:00.000Z'
     })
 
     done()
@@ -47,30 +57,10 @@ describe('Post job position', () => {
       .post('/')
       .send({})
 
-    expect(res.statusCode).toEqual(403)
-    expect(res.body).toEqual({
-      '_original': {},
-      'details': [
-        {
-          'context': { 'key': 'webPage', 'label': 'webPage', },
-          'message': '"webPage" is required',
-          'path': ['webPage',],
-          'type': 'any.required',
-        },
-        {
-          'context': { 'key': 'company', 'label': 'company', },
-          'message': '"company" is required',
-          'path': ['company',],
-          'type': 'any.required',
-        },
-        {
-          'context': { 'key': 'jobRecruiter', 'label': 'jobRecruiter', },
-          'message': '"jobRecruiter" is required',
-          'path': ['jobRecruiter',],
-          'type': 'any.required',
-        },
-      ],
-    })
+    expect(res.statusCode).toEqual(406)
+    expect(res.body).toBeTruthy()
+    expect(res.body.error).toEqual('"webPage" is required. "company" is required. "jobRecruiter" is required')
+    expect(res.body.details).toBeTruthy()
 
     done()
   })
