@@ -1,11 +1,9 @@
 const request = require('supertest')
 const app = require('./routes.js')
 const repository = require('./repository.js')
-const mockNow = require('jest-mock-now')
+const { mockDate } = require('../test-support/date.js')
 
-const NOW = new Date('2020-04-12');
-mockNow(NOW)
-
+mockDate()
 jest.mock('./repository.js')
 
 describe('Get job positions', () => {
@@ -46,6 +44,7 @@ describe('Post job position', () => {
       webPage: 'https://github.com/careers',
       company: { name: 'Github', province: 'PR' },
       jobRecruiter: { email: "recruiter@github.com", linkedIn: "recruiter-from-github" },
+      isValid: true,
       createdAt: '2020-04-12T00:00:00.000Z'
     })
 

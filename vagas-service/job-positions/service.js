@@ -28,6 +28,7 @@ module.exports = {
     const savedJobPosition = await repository.save({
       ...validationResult.value,
       createdAt: new Date(Date.now()),
+      isValid: true,
       user: { userAgent, ip }
     })
 

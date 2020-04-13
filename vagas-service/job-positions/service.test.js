@@ -1,11 +1,9 @@
 const repository = require('./repository.js')
 const service = require('./service.js')
-const mockNow = require('jest-mock-now')
+const { NOW, mockDate } = require('../test-support/date.js')
 
+mockDate()
 jest.mock('./repository.js')
-
-const NOW = new Date('2020-04-12');
-mockNow(NOW)
 
 describe('Save job position', () => {
   beforeEach(() => {
@@ -22,7 +20,7 @@ describe('Save job position', () => {
 
     const savedJobPosition = await service.addJobPoisition(jobPosition, {'user-agent': 'chrome', ip: '::1'})
 
-    expect(savedJobPosition).toEqual({_id: 'FAKE_ID', createdAt: NOW, ...jobPosition})
+    expect(savedJobPosition).toEqual({_id: 'FAKE_ID', createdAt: NOW, isValid: true, ...jobPosition})
     expect(repository.save.mock.calls.length).toBe(1)
   })
 

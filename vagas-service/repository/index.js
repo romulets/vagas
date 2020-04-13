@@ -29,6 +29,14 @@ module.exports = {
     return await collection.find(filters, options).toArray()
   },
 
+  async count(collectionName, {filters, options}) {
+    filters = filters || {}
+    options = options || {}
+  
+    const collection = db.collection(collectionName)
+    return await collection.countDocuments(filters, options)
+  },
+
   async connect(alternativeConectionString, alternativeDbName) {
     console.info('Connecting to the database')
     client = new MongoClient(alternativeConectionString || connectionString, clientConfig)
