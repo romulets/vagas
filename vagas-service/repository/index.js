@@ -1,7 +1,4 @@
 const { MongoClient } = require('mongodb')
-const dotenv = require('dotenv')
-
-dotenv.config()
 
 const connectionString = process.env.DATABASE_CONNECTION_STRING
 const poolSize = process.env.DATABASE_CONNECTION_POOL_SIZE || 1

@@ -1,10 +1,10 @@
+const dotenv = require('dotenv')
+dotenv.config()
+
 const http = require('http')
 const app = require('./routes.js')
 const repository = require('./repository')
 const { createTerminus } = require('@godaddy/terminus')
-const dotenv = require('dotenv')
-
-dotenv.config()
 
 const portNumber = process.env.PORT || 3000
 const server = http.createServer(app)
