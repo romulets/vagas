@@ -7,8 +7,15 @@ app.use(bodyParser.json())
 app.set('trust proxy', true)
 
 app
-  .get('/', (_, res) => {
-    res.json(jobPositionService.getJobPositions())
+  .get('/', async (req, res) => {
+    try {
+      const { pageSize, page } = req.query
+      const result = await jobPositionService.getJobPositions(parseInt(pageSize), parseInt(page))
+      res.json(result)
+    } catch(e) {
+      console.error(e)
+      res.status(406).json({error: e.message, ...e})
+    }
   })
   .post('/', async (req, res) => {
     try {

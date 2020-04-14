@@ -1,21 +1,24 @@
 const { validate } = require('./entity.js')
+const { subtractDays, now } = require('../date')
 const repository = require('./repository.js')
 
 function cleanJobPosition(jobPosition) {
+  jobPosition = { ...jobPosition }
   delete jobPosition.user
   return jobPosition
 }
 
+function getExpirationDate() {
+  const jobPositionExpirationDay = process.env.JOB_POSITION_EXPIRATION_DAYS || 5
+  return subtractDays(now(), jobPositionExpirationDay)
+}
+
 module.exports = {
-  getJobPositions() {
-    const mockedEntity = {
-      _id: 'FAKE_ID',
-      webPage: 'https://github.com/careers',
-      company: { name: 'Github', province: 'PR' },
-      jobRecruiter: { email: "recruiter@github.com", linkedIn: "recruiter-from-github" },
-      createdAt: '2020-04-10T10:00:00'
-    }
-    return [mockedEntity, mockedEntity, mockedEntity]
+  async getJobPositions(pageSize, currentPage) {
+    const expirationDate = getExpirationDate()
+    const queryResult = await repository.findValidJobPositions(expirationDate, pageSize, currentPage)
+    queryResult.documents = queryResult.documents.map(cleanJobPosition)
+    return queryResult
   },
 
   async addJobPoisition(jobPosition, { 'user-agent': userAgent, ip }) {
@@ -27,7 +30,7 @@ module.exports = {
 
     const savedJobPosition = await repository.save({
       ...validationResult.value,
-      createdAt: new Date(Date.now()),
+      createdAt: now(),
       isValid: true,
       user: { userAgent, ip }
     })

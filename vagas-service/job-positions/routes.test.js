@@ -9,20 +9,70 @@ jest.mock('./repository.js')
 describe('Get job positions', () => {
   beforeAll(() => {
     repository.save.mockImplementation(jobPosition => ({_id: 'FAKE_ID', ...jobPosition}))
+    repository.findValidJobPositions.mockReset()
+    repository.findValidJobPositions.mockImplementation((_, pageSize, page) => ({
+      total: 2,
+      pageSize: pageSize || 10,
+      currentPage: page || 1,
+      pagesCount: 1,
+      documents: [
+        {
+          _id: '1',
+          webPage: 'https://github.com/careers',
+          company: { name: 'Github', province: 'PR' },
+          jobRecruiter: { email: 'recruiter@github.com', linkedIn: 'recruiter-from-github' },
+          createdAt: '2020-04-10T10:00:00',
+          user: {any: true}
+        },
+        {
+          _id: '2',
+          webPage: 'https://github.com/careers',
+          company: { name: 'Github', province: 'PR' },
+          jobRecruiter: { email: 'recruiter@github.com', linkedIn: 'recruiter-from-github' },
+          createdAt: '2020-04-10T10:00:00',
+          user: {any: true}
+        }
+      ]
+    }))
   })
 
-  it('Should get successfully', async done => {
+  it('Should get without parameters', async done => {
     const res = await request(app)
       .get('/')
 
     expect(res.statusCode).toEqual(200)
-    expect(res.body).toBeInstanceOf(Array)
-    expect(res.body).toContainEqual({
-      _id: 'FAKE_ID',
-      webPage: 'https://github.com/careers',
-      company: { name: 'Github', province: 'PR' },
-      jobRecruiter: { email: 'recruiter@github.com', linkedIn: 'recruiter-from-github' },
-      createdAt: '2020-04-10T10:00:00'
+    expect(res.body.total).toBe(2)
+    expect(res.body.pageSize).toBe(10)
+    expect(res.body.currentPage).toBe(1)
+    expect(res.body.pagesCount).toBe(1)
+    expect(res.body.documents.length).toBe(2)
+    expect(res.body.documents).toContainEqual({
+          _id: '1',
+          webPage: 'https://github.com/careers',
+          company: { name: 'Github', province: 'PR' },
+          jobRecruiter: { email: 'recruiter@github.com', linkedIn: 'recruiter-from-github' },
+          createdAt: '2020-04-10T10:00:00',
+    })
+    done()
+  })
+
+  it('Should get with parameters', async done => {
+    const res = await request(app)
+      .get('/')
+      .query({ pageSize: 15, page: 3 })
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.total).toBe(2)
+    expect(res.body.pageSize).toBe(15)
+    expect(res.body.currentPage).toBe(3)
+    expect(res.body.pagesCount).toBe(1)
+    expect(res.body.documents.length).toBe(2)
+    expect(res.body.documents).toContainEqual({
+          _id: '1',
+          webPage: 'https://github.com/careers',
+          company: { name: 'Github', province: 'PR' },
+          jobRecruiter: { email: 'recruiter@github.com', linkedIn: 'recruiter-from-github' },
+          createdAt: '2020-04-10T10:00:00',
     })
     done()
   })
